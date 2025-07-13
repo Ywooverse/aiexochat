@@ -31,6 +31,7 @@ thread_id = st.session_state.thread_id
 
 # 4. 학생 이름 입력 UI (입력창과 전송 버튼 한 줄)
 if not st.session_state.student_name_entered:
+    error_msg = None
     with st.form(key="name_form", clear_on_submit=False):
         col1, col2 = st.columns([4, 1])
         with col1:
@@ -39,6 +40,7 @@ if not st.session_state.student_name_entered:
                 value=st.session_state.student_name,
                 key="name_input",
                 max_chars=20,
+                placeholder="이름을 입력하세요",
                 label_visibility="collapsed"
             )
         with col2:
@@ -49,7 +51,9 @@ if not st.session_state.student_name_entered:
                 st.session_state.student_name_entered = True
                 st.rerun()
             else:
-                st.warning("이름을 입력하세요.")
+                error_msg = "⚠️ 반드시 이름을 입력한 후 전송하세요!"
+    if error_msg:
+        st.error(error_msg)
     st.stop()
 else:
     st.success(f"👤 학생 이름: {st.session_state.student_name}")
