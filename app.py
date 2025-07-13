@@ -44,7 +44,7 @@ for msg in thread_messages.data:
     with st.chat_message(msg.role):
         st.write(msg.content[0].text.value)
 
-# 6. Supabase 저장 함수 (수동 저장)
+# 6. Supabase 저장 함수
 def save_chat_history():
     if "chat_buffer" not in st.session_state or not st.session_state.chat_buffer:
         return
@@ -91,7 +91,8 @@ if prompt:
         "a": answer
     })
 
-# 8. 수동 저장 버튼
-if st.button("💾 지금까지 질문 저장하기"):
-    save_chat_history()
-    st.success("모든 질문/답변이 저장되었습니다.")
+# 8. 질문이 있을 때만 저장 버튼 노출
+if st.session_state.chat_buffer:
+    if st.button("💾 지금까지 질문 저장하기"):
+        save_chat_history()
+        st.success("모든 질문/답변이 저장되었습니다.")
