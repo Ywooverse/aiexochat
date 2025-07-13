@@ -19,24 +19,32 @@ st.header("🤖 인공지능과 아두이노를 활용한 외계 행성 탐사 �
 # 3. 세션 상태 초기화
 if "student_name" not in st.session_state:
     st.session_state.student_name = ""
-
+if "student_name_entered" not in st.session_state:
+    st.session_state.student_name_entered = False
 if "chat_buffer" not in st.session_state:
     st.session_state.chat_buffer = []
-
 if "thread_id" not in st.session_state:
     thread = client.beta.threads.create()
     st.session_state.thread_id = thread.id
 
 thread_id = st.session_state.thread_id
 
-# 4. 학생 이름 입력
-student_name = st.text_input("학생 이름을 입력하세요:", value=st.session_state.student_name, max_chars=20)
-if student_name:
-    st.session_state.student_name = student_name
-
-if not st.session_state.student_name:
-    st.info("이름을 먼저 입력하세요.")
+# 4. 학생 이름 입력 UI
+if not st.session_state.student_name_entered:
+    col1, col2 = st.columns([3,1])
+    with col1:
+        student_name = st.text_input("학생 이름을 입력하세요:", value=st.session_state.student_name, key="name_input", max_chars=20)
+    with col2:
+        send_name = st.button("전송", key="name_send")
+    if send_name and student_name.strip() != "":
+        st.session_state.student_name = student_name.strip()
+        st.session_state.student_name_entered = True
+        st.experimental_rerun()
+    elif send_name and student_name.strip() == "":
+        st.warning("이름을 입력하세요.")
     st.stop()
+else:
+    st.success(f"👤 학생 이름: {st.session_state.student_name}")
 
 # 5. 이전 대화 표시
 thread_messages = client.beta.threads.messages.list(thread_id, order="asc")
@@ -85,7 +93,6 @@ if prompt:
             with st.chat_message("assistant"):
                 st.write(answer)
             break
-    # 질문/답변을 버퍼에 저장
     st.session_state.chat_buffer.append({
         "q": prompt,
         "a": answer
